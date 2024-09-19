@@ -1,0 +1,9 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background color can be dynamic or changed -->
+    <solid android:color="@color/windowBackground"/> <!-- Dynamic background color -->
+
+    <!-- Border color updated to match the new color scheme -->
+    <stroke android:width="2dp" android:color="@color/colorSecondaryDark"/> <!-- Updated to secondary color -->
+
+    <corners android:radius="8dp"/>
+</shape>

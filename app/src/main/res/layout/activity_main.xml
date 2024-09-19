@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Top Bar with Title and Profile Icon -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/test"
+        android:elevation="4dp"
+        android:padding="0dp">
+
+        <!-- Title on the left -->
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time Management"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:layout_alignParentStart="true" />
+
+        <!-- Profile Icon on the right -->
+        <ImageView
+            android:id="@+id/profile_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/man"
+            android:contentDescription="Profile"
+            android:padding="8dp"
+            android:layout_gravity="end" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- RecyclerView to Display Task List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/toolbar"
+        android:layout_above="@+id/buttons_container"
+        android:layout_marginBottom="16dp"
+        android:scrollbars="vertical"
+        android:background="@color/colorSurface"
+        android:clipToPadding="false" />
+
+    <!-- Container for Buttons -->
+    <LinearLayout
+        android:id="@+id/buttons_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@color/colorSurface"
+        android:padding="8dp">
+
+        <!-- Button to Add New Task -->
+        <Button
+            android:id="@+id/add_task_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add New Task"
+            android:backgroundTint="@color/button_save_color"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Button to Go to Timer -->
+        <Button
+            android:id="@+id/timer_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Go to Stopwatch"
+            android:backgroundTint="@color/button_save_color"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Button to Go to Reminder -->
+        <Button
+            android:id="@+id/reminder_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Go to Reminder"
+            android:backgroundTint="@color/button_save_color"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
+
+</RelativeLayout>

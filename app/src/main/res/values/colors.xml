@@ -1,0 +1,38 @@
+<resources>
+    <!-- Primary Colors -->
+    <color name="colorPrimary">#FFDE03</color>  <!-- Bright Yellow -->
+    <color name="colorPrimaryDark">#C6B200</color>  <!-- Darker Yellow -->
+    <color name="colorOnPrimary">#FFFFFF</color>  <!-- White for text on primary -->
+
+    <!-- Secondary Colors -->
+    <color name="colorSecondary">#0336FF</color>  <!-- Bright Blue -->
+    <color name="colorSecondaryDark">#0029CC</color>
+    <color name="colorOnSecondary">#FFFFFF</color>  <!-- White for text on secondary -->
+
+    <!-- Background Colors -->
+    <color name="windowBackground">#F0F4C3</color>  <!-- Light Lime Green, to complement the yellow -->
+
+    <color name="test">#4F75FF</color>
+
+    <!-- Button Colors -->
+    <color name="button_save_color">#FFAF00</color>
+    <color name="button_save_pressed_color">#D1B602</color><!-- Golden Yellow -->
+    <color name="button_back_color">#0026A8</color>  <!-- Deep Blue -->
+
+    <!-- Surface Colors -->
+    <color name="colorSurface">#F0F4C3</color>  <!-- Same as windowBackground for consistency -->
+    <color name="colorOnSurface">#000000</color>  <!-- Black for contrast -->
+
+    <!-- Error Colors -->
+    <color name="colorError">#D32F2F</color>  <!-- Red -->
+    <color name="colorOnError">#FFFFFF</color>  <!-- White for text on error -->
+
+    <!-- Custom Colors -->
+    <color name="white">#FFFFFF</color>  <!-- White -->
+    <color name="black">#000000</color>  <!-- Black -->
+
+
+
+
+
+</resources>

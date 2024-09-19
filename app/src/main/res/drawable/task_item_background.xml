@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background remains white -->
+    <solid android:color="@color/white"/>
+
+    <!-- Border color updated to the new secondary color -->
+    <stroke android:width="1dp" android:color="@color/colorSecondary"/>
+
+    <!-- Rounded corners with a 4dp radius -->
+    <corners android:radius="4dp"/>
+</shape>

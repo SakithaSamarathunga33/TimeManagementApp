@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/colorSurface">
+
+    <!-- Reminder Time Input -->
+    <EditText
+        android:id="@+id/reminder_time_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Reminder Time (MM:ss)"
+        android:inputType="time"
+        android:background="@color/white"
+        android:textColor="@color/black"
+        android:padding="12dp" />
+
+    <!-- Save Reminder Button -->
+    <Button
+        android:id="@+id/save_reminder_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Reminder"
+        android:background="@color/button_save_color"
+        android:textColor="@color/black"
+        android:layout_marginTop="16dp" />
+</LinearLayout>
