@@ -60,6 +60,18 @@
             android:label="Profile"
             android:theme="@style/Theme.TimeManagementApp" />
 
+        <activity
+            android:name=".PersonalTasksActivity"
+            android:exported="true"
+            android:label="Profile"
+            android:theme="@style/Theme.TimeManagementApp" />
+
+        <activity
+            android:name=".WorkTasksActivity"
+            android:exported="true"
+            android:label="Profile"
+            android:theme="@style/Theme.TimeManagementApp" />
+
 
         <!-- TaskWidgetProvider Declaration -->
         <receiver
