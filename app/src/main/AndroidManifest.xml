@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions for notifications and alarms -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -25,53 +30,42 @@
             </intent-filter>
         </activity>
 
-        <!-- AddTaskActivity Declaration -->
+        <!-- Other Activities Declaration -->
         <activity
             android:name=".AddTaskActivity"
             android:exported="true"
             android:label="Add Task"
             android:theme="@style/Theme.TimeManagementApp" />
-
-        <!-- TimerActivity Declaration -->
         <activity
             android:name=".TimerActivity"
             android:exported="true"
             android:label="Timer/Stopwatch"
             android:theme="@style/Theme.TimeManagementApp" />
-
-        <!-- ReminderActivity Declaration -->
         <activity
             android:name=".ReminderActivity"
             android:exported="true"
             android:label="Reminder"
             android:theme="@style/Theme.TimeManagementApp" />
-
-        <!-- TaskDetailActivity Declaration -->
         <activity
             android:name=".TaskDetailActivity"
             android:exported="true"
             android:label="Task Details"
             android:theme="@style/Theme.TimeManagementApp" />
-
-        <!-- ProfileActivity Declaration -->
         <activity
             android:name=".ProfileActivity"
             android:exported="true"
             android:label="Profile"
             android:theme="@style/Theme.TimeManagementApp" />
-
         <activity
             android:name=".PersonalTasksActivity"
             android:exported="true"
-            android:label="Profile"
+            android:label="Personal Tasks"
             android:theme="@style/Theme.TimeManagementApp" />
-
         <activity
             android:name=".WorkTasksActivity"
             android:exported="true"
-            android:label="Profile"
+            android:label="Work Tasks"
             android:theme="@style/Theme.TimeManagementApp" />
-
 
         <!-- TaskWidgetProvider Declaration -->
         <receiver
@@ -84,5 +78,10 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/task_widget_info" />
         </receiver>
+
+        <!-- ReminderReceiver Declaration for handling alarms -->
+        <receiver
+            android:name=".ReminderReceiver"
+            android:exported="true" />
     </application>
 </manifest>

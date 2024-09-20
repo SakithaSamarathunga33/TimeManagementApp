@@ -1,15 +1,17 @@
 package com.example.timemanagementapp
 
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
+import android.Manifest
+import android.app.*
+import android.content.*
+import android.content.pm.PackageManager
+import android.media.RingtoneManager
+import android.os.*
 import android.util.Log
-import android.widget.Button
-import android.widget.Chronometer
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import java.util.*
 
 class TaskDetailActivity : AppCompatActivity() {
 
@@ -18,19 +20,22 @@ class TaskDetailActivity : AppCompatActivity() {
     private var running: Boolean = false
     private lateinit var handler: Handler
     private var completionTimeInMillis: Long = 0
+    private lateinit var alarmManager: AlarmManager
+    private lateinit var pendingIntent: PendingIntent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_task_detail)
 
         // Retrieve the task object using Parcelable
-        val task = intent.getParcelableExtra<Task>("task") // Use Parcelable
+        val task = intent.getParcelableExtra<Task>("task")
         if (task == null) {
             Toast.makeText(this, "Task not found", Toast.LENGTH_SHORT).show()
-            finish() // Close the activity if the task is null
+            finish()
             return
         }
 
+        // Initialize views
         val taskNameTextView = findViewById<TextView>(R.id.task_name_detail)
         val taskDescriptionTextView = findViewById<TextView>(R.id.task_description_detail)
         val taskPriorityTextView = findViewById<TextView>(R.id.task_priority_detail)
@@ -40,7 +45,7 @@ class TaskDetailActivity : AppCompatActivity() {
         taskNameTextView.text = task.name
         taskDescriptionTextView.text = task.description
         taskPriorityTextView.text = task.priority
-        taskCategoryTextView.text = task.category // Display category
+        taskCategoryTextView.text = task.category
 
         // Parse the completion time into milliseconds
         completionTimeInMillis = parseCompletionTime(task.completionTime)
@@ -48,7 +53,9 @@ class TaskDetailActivity : AppCompatActivity() {
         Log.d("TaskDetailActivity", "Completion Time (ms): $completionTimeInMillis")
 
         handler = Handler(Looper.getMainLooper())
+        alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+        // Start button for the stopwatch
         findViewById<Button>(R.id.start_button).setOnClickListener {
             if (!running) {
                 chronometer.base = SystemClock.elapsedRealtime() - pauseOffset
@@ -58,6 +65,7 @@ class TaskDetailActivity : AppCompatActivity() {
             }
         }
 
+        // Stop button for the stopwatch
         findViewById<Button>(R.id.stop_button).setOnClickListener {
             if (running) {
                 chronometer.stop()
@@ -66,14 +74,18 @@ class TaskDetailActivity : AppCompatActivity() {
             }
         }
 
+        // Reset button for the stopwatch
         findViewById<Button>(R.id.reset_button).setOnClickListener {
             chronometer.base = SystemClock.elapsedRealtime()
             pauseOffset = 0
         }
 
+        // Back button to finish the activity
         findViewById<Button>(R.id.back_button).setOnClickListener {
             finish()
         }
+
+
     }
 
     private fun parseCompletionTime(time: String): Long {
@@ -91,17 +103,119 @@ class TaskDetailActivity : AppCompatActivity() {
             override fun run() {
                 if (running) {
                     val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
-                    Log.d("TaskDetailActivity", "Elapsed: $elapsedMillis, Completion: $completionTimeInMillis")
+                    Log.d(
+                        "TaskDetailActivity",
+                        "Elapsed: $elapsedMillis, Completion: $completionTimeInMillis"
+                    )
 
                     if (elapsedMillis >= completionTimeInMillis) {
                         chronometer.stop()
                         running = false
-                        Toast.makeText(this@TaskDetailActivity, "Task time completed!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@TaskDetailActivity,
+                            "Task time completed!",
+                            Toast.LENGTH_LONG
+                        ).show()
                     } else {
                         handler.postDelayed(this, 1000)
                     }
                 }
             }
         }, 1000)
+    }
+
+    private fun showTimePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val timePicker = TimePickerDialog(
+            this, { _, hourOfDay, minute ->
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                calendar.set(Calendar.MINUTE, minute)
+                calendar.set(Calendar.SECOND, 0)
+                setReminder(calendar.timeInMillis)
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
+        )
+        timePicker.show()
+    }
+
+    private fun setReminder(timeInMillis: Long) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Check if the app can schedule exact alarms
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Toast.makeText(
+                    this,
+                    "Please allow this app to schedule exact alarms in settings.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+        }
+
+        // Check if notification permission is granted (required for Android 13 and above)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
+                return
+            }
+        }
+
+        val intent = Intent(this, AlarmReceiver::class.java)
+        pendingIntent = PendingIntent.getBroadcast(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Schedule the alarm
+        try {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
+            Toast.makeText(this, "Reminder set!", Toast.LENGTH_SHORT).show()
+        } catch (e: SecurityException) {
+            Toast.makeText(
+                this,
+                "Failed to set reminder. Check your permissions.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    // Create the AlarmReceiver class to handle notifications
+    class AlarmReceiver : BroadcastReceiver() {
+
+        override fun onReceive(context: Context, intent: Intent) {
+            showNotification(context)
+        }
+
+        private fun showNotification(context: Context) {
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            // Create notification channel for Android 8.0 and above
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    "reminder_channel",
+                    "Reminder Notifications",
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    enableVibration(true)
+                    vibrationPattern = longArrayOf(100, 200, 100, 200)
+                    setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), null)
+                }
+                notificationManager.createNotificationChannel(channel)
+            }
+
+            val notificationBuilder = NotificationCompat.Builder(context, "reminder_channel")
+                .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+                .setContentTitle("Task Reminder")
+                .setContentText("It's time to complete your task!")
+                .setAutoCancel(true)
+                .setVibrate(longArrayOf(100, 200, 100, 200))
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+            notificationManager.notify(1, notificationBuilder.build())
+        }
     }
 }

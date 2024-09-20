@@ -79,12 +79,12 @@
             android:textColor="@color/black"
             android:layout_marginBottom="8dp" />
 
-        <!-- Button to Go to Reminder -->
+        <!-- New Button to Set Reminder -->
         <Button
-            android:id="@+id/reminder_button"
+            android:id="@+id/set_reminder_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Go to Reminder"
+            android:text="Set Reminder"
             android:backgroundTint="@color/button_save_color"
             android:textColor="@color/black" />
 

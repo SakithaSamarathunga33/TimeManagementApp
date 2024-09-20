@@ -1,19 +1,24 @@
 package com.example.timemanagementapp
 
-import android.app.Activity
+import android.app.*
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var taskAdapter: TaskAdapter
     private val tasks = ArrayList<Task>()
+    private var reminderTimeInMillis: Long = 0L // To store reminder time
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,10 +42,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Reminder Button
-        findViewById<Button>(R.id.reminder_button).setOnClickListener {
-            val intent = Intent(this, ReminderActivity::class.java)
-            startActivity(intent)
+        // Set Reminder Button
+        findViewById<Button>(R.id.set_reminder_button).setOnClickListener {
+            showTimePicker() // Set reminder time
         }
 
         // Profile Icon Click
@@ -57,6 +61,45 @@ class MainActivity : AppCompatActivity() {
 
         // Load previously saved tasks
         loadTasks()
+    }
+
+    // TimePickerDialog to set reminder
+    private fun showTimePicker() {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+
+        TimePickerDialog(this, { _, selectedHour, selectedMinute ->
+            // Set reminder for the selected time
+            setReminder(selectedHour, selectedMinute)
+        }, hour, minute, true).show()
+    }
+
+    // Function to set the reminder and trigger the notification
+    private fun setReminder(hour: Int, minute: Int) {
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+            if (before(Calendar.getInstance())) {
+                add(Calendar.DAY_OF_MONTH, 1) // Set for the next day if time has already passed
+            }
+        }
+
+        reminderTimeInMillis = calendar.timeInMillis // Store the reminder time
+
+        // Schedule the notification
+        val intent = Intent(this, ReminderReceiver::class.java).apply {
+            putExtra("TASK_TIME", "$hour:$minute")
+        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+
+        Toast.makeText(this, "Reminder set for $hour:$minute", Toast.LENGTH_SHORT).show()
     }
 
     // Handle result when returning from AddTaskActivity
