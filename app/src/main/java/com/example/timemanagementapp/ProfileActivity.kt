@@ -11,6 +11,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private lateinit var workTasksButton: Button
     private lateinit var personalTasksButton: Button
+    private lateinit var completedTasksButton: Button // New button for completed tasks
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,17 +30,21 @@ class ProfileActivity : AppCompatActivity() {
         // Initialize buttons
         workTasksButton = findViewById(R.id.view_work_tasks_button)
         personalTasksButton = findViewById(R.id.view_personal_tasks_button)
+        completedTasksButton = findViewById(R.id.view_completed_tasks_button) // Initialize new button
 
         // Set button click listeners
         workTasksButton.setOnClickListener {
-            // Start WorkTasksActivity when "View Work Tasks" button is clicked
             val intent = Intent(this, WorkTasksActivity::class.java)
             startActivity(intent)
         }
 
         personalTasksButton.setOnClickListener {
-            // Start PersonalTasksActivity when "View Personal Tasks" button is clicked
             val intent = Intent(this, PersonalTasksActivity::class.java)
+            startActivity(intent)
+        }
+
+        completedTasksButton.setOnClickListener { // Set listener for completed tasks button
+            val intent = Intent(this, CompletedTasksActivity::class.java)
             startActivity(intent)
         }
 

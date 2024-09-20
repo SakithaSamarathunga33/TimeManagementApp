@@ -1,12 +1,18 @@
 package com.example.timemanagementapp
 
+import Task
 import android.Manifest
 import android.app.*
 import android.content.*
 import android.content.pm.PackageManager
 import android.media.RingtoneManager
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -22,6 +28,9 @@ class TaskDetailActivity : AppCompatActivity() {
     private var completionTimeInMillis: Long = 0
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
+    private lateinit var progressBar: ProgressBar
+    private lateinit var saveButton: Button
+    private lateinit var completedCheckbox: CheckBox
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +50,9 @@ class TaskDetailActivity : AppCompatActivity() {
         val taskPriorityTextView = findViewById<TextView>(R.id.task_priority_detail)
         val taskCategoryTextView = findViewById<TextView>(R.id.task_category_detail)
         chronometer = findViewById(R.id.stopwatch)
+        progressBar = findViewById(R.id.progress_bar)
+        saveButton = findViewById(R.id.save_button)
+        completedCheckbox = findViewById(R.id.task_completed_checkbox)
 
         taskNameTextView.text = task.name
         taskDescriptionTextView.text = task.description
@@ -49,8 +61,6 @@ class TaskDetailActivity : AppCompatActivity() {
 
         // Parse the completion time into milliseconds
         completionTimeInMillis = parseCompletionTime(task.completionTime)
-
-        Log.d("TaskDetailActivity", "Completion Time (ms): $completionTimeInMillis")
 
         handler = Handler(Looper.getMainLooper())
         alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -78,6 +88,7 @@ class TaskDetailActivity : AppCompatActivity() {
         findViewById<Button>(R.id.reset_button).setOnClickListener {
             chronometer.base = SystemClock.elapsedRealtime()
             pauseOffset = 0
+            progressBar.progress = 0  // Reset progress bar on reset
         }
 
         // Back button to finish the activity
@@ -85,7 +96,29 @@ class TaskDetailActivity : AppCompatActivity() {
             finish()
         }
 
+        // Set the max progress of the progress bar based on completion time
+        progressBar.max = completionTimeInMillis.toInt()
 
+        // Checkbox listener to show the save button
+        completedCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            saveButton.visibility = if (isChecked) View.VISIBLE else View.GONE
+        }
+
+        // Save button listener to move the task to completed
+        saveButton.setOnClickListener {
+            // Logic to save the task to completed tasks
+            moveToCompletedTasks(task)
+            finish() // Optionally finish this activity after saving
+        }
+    }
+
+    private fun moveToCompletedTasks(task: Task) {
+        // Implement your logic to remove the task from the current list
+        // and add it to the completed tasks list
+        // Example:
+        // TaskRepository.removeTask(task)
+        // TaskRepository.addCompletedTask(task)
+        Toast.makeText(this, "${task.name} has been marked as completed!", Toast.LENGTH_SHORT).show()
     }
 
     private fun parseCompletionTime(time: String): Long {
@@ -108,9 +141,19 @@ class TaskDetailActivity : AppCompatActivity() {
                         "Elapsed: $elapsedMillis, Completion: $completionTimeInMillis"
                     )
 
+                    // Calculate progress percentage
+                    val progress = if (completionTimeInMillis > 0) {
+                        (elapsedMillis * 100 / completionTimeInMillis).toInt().coerceIn(0, 100)
+                    } else {
+                        0
+                    }
+
+                    progressBar.progress = progress  // Update progress bar
+
                     if (elapsedMillis >= completionTimeInMillis) {
                         chronometer.stop()
                         running = false
+                        progressBar.progress = progressBar.max  // Set progress to max on completion
                         Toast.makeText(
                             this@TaskDetailActivity,
                             "Task time completed!",

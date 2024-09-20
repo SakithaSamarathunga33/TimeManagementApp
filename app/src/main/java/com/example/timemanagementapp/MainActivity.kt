@@ -1,14 +1,17 @@
 package com.example.timemanagementapp
 
+import Task
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
@@ -19,8 +22,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var taskAdapter: TaskAdapter
     private val tasks = ArrayList<Task>()
     private var reminderTimeInMillis: Long = 0L // To store reminder time
+    private lateinit var themeSwitch: Switch
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        sharedPreferences = getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+        setTheme(if (sharedPreferences.getBoolean("dark_theme", false)) R.style.Theme_TimeManagementApp else R.style.Theme_TimeManagementApp_Light)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -30,13 +38,23 @@ class MainActivity : AppCompatActivity() {
         taskAdapter = TaskAdapter(this, tasks)
         recyclerView.adapter = taskAdapter
 
+        // Initialize Theme Switch
+        themeSwitch = findViewById(R.id.theme_switch)
+        themeSwitch.isChecked = sharedPreferences.getBoolean("dark_theme", false)
+        themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            val editor = sharedPreferences.edit()
+            editor.putBoolean("dark_theme", isChecked)
+            editor.apply()
+            recreate() // Recreate the activity to apply the new theme
+        }
+
         // Add Task Button
         findViewById<Button>(R.id.add_task_button).setOnClickListener {
             val intent = Intent(this, AddTaskActivity::class.java)
             startActivityForResult(intent, 1) // Request code 1 for adding new task
         }
 
-        // Timer Button
+        // Stopwatch Button
         findViewById<Button>(R.id.timer_button).setOnClickListener {
             val intent = Intent(this, TimerActivity::class.java)
             startActivity(intent)
@@ -44,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set Reminder Button
         findViewById<Button>(R.id.set_reminder_button).setOnClickListener {
-            showTimePicker() // Set reminder time
+            showTimePicker()
         }
 
         // Profile Icon Click
@@ -70,7 +88,6 @@ class MainActivity : AppCompatActivity() {
         val minute = calendar.get(Calendar.MINUTE)
 
         TimePickerDialog(this, { _, selectedHour, selectedMinute ->
-            // Set reminder for the selected time
             setReminder(selectedHour, selectedMinute)
         }, hour, minute, true).show()
     }
@@ -82,11 +99,11 @@ class MainActivity : AppCompatActivity() {
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
             if (before(Calendar.getInstance())) {
-                add(Calendar.DAY_OF_MONTH, 1) // Set for the next day if time has already passed
+                add(Calendar.DAY_OF_MONTH, 1)
             }
         }
 
-        reminderTimeInMillis = calendar.timeInMillis // Store the reminder time
+        reminderTimeInMillis = calendar.timeInMillis
 
         // Schedule the notification
         val intent = Intent(this, ReminderReceiver::class.java).apply {
@@ -106,14 +123,14 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && data != null) {
-            val task = data.getParcelableExtra<Task>("task") // Use Parcelable instead of Serializable
+            val task = data.getParcelableExtra<Task>("task")
             val isEditing = data.getBooleanExtra("isEditing", false)
             if (task != null) {
                 if (isEditing) {
-                    // Update existing task
+                    // Update the entire task
                     val position = tasks.indexOfFirst { it.name == task.name }
                     if (position != -1) {
-                        tasks[position] = task
+                        tasks[position] = task // Replace the old task with the edited one
                         taskAdapter.notifyItemChanged(position)
                     }
                 } else {
@@ -121,6 +138,8 @@ class MainActivity : AppCompatActivity() {
                     tasks.add(task)
                     taskAdapter.notifyItemInserted(tasks.size - 1)
                 }
+                // Log the task update for debugging
+                Log.d("MainActivity", "Task Updated: Name=${task.name}, Description=${task.description}, Priority=${task.priority}, Category=${task.category}")
                 // Save tasks to storage
                 TaskStorage.saveTasks(this, getWorkTasks(), getPersonalTasks())
             }

@@ -66,6 +66,11 @@
             android:exported="true"
             android:label="Work Tasks"
             android:theme="@style/Theme.TimeManagementApp" />
+        <activity
+            android:name=".CompletedTasksActivity"
+            android:exported="true"
+            android:label="Completed Tasks"
+            android:theme="@style/Theme.TimeManagementApp" />
 
         <!-- TaskWidgetProvider Declaration -->
         <receiver

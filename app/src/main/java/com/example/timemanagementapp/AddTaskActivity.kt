@@ -1,20 +1,23 @@
 package com.example.timemanagementapp
 
+import Task
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
+
 
 class AddTaskActivity : AppCompatActivity() {
 
     private lateinit var taskNameInput: EditText
     private lateinit var taskDescriptionInput: EditText
-    private lateinit var prioritySpinner: Spinner
+    private lateinit var prioritySpinner: MaterialAutoCompleteTextView
     private lateinit var taskCompletionTimeInput: EditText
-    private lateinit var categorySpinner: Spinner // Spinner for category selection
+    private lateinit var categorySpinner: MaterialAutoCompleteTextView
     private var isEditing: Boolean = false
     private lateinit var currentTask: Task
 
@@ -26,32 +29,37 @@ class AddTaskActivity : AppCompatActivity() {
         taskDescriptionInput = findViewById(R.id.task_description_input)
         prioritySpinner = findViewById(R.id.priority_spinner)
         taskCompletionTimeInput = findViewById(R.id.task_completion_time_input)
-        categorySpinner = findViewById(R.id.category_spinner) // Initialize category spinner
+        categorySpinner = findViewById(R.id.category_spinner)
+
+        // Setup adapters for the dropdowns
+        val priorityArray = resources.getStringArray(R.array.priority_array)
+        val priorityAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, priorityArray)
+        prioritySpinner.setAdapter(priorityAdapter)
+
+        val categoryArray = resources.getStringArray(R.array.category_array)
+        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categoryArray)
+        categorySpinner.setAdapter(categoryAdapter)
 
         val saveTaskButton = findViewById<Button>(R.id.save_task_button)
         val backButton = findViewById<Button>(R.id.back_button)
 
         // Retrieve task from intent if editing
-        intent.getParcelableExtra<Task>("task")?.let { // Use Parcelable instead of Serializable
+        intent.getParcelableExtra<Task>("task")?.let {
             currentTask = it
             taskNameInput.setText(currentTask.name)
             taskDescriptionInput.setText(currentTask.description)
-            val priorityArray = resources.getStringArray(R.array.priority_array)
-            prioritySpinner.setSelection(priorityArray.indexOf(currentTask.priority))
+            prioritySpinner.setText(currentTask.priority, false)
             taskCompletionTimeInput.setText(currentTask.completionTime)
-
-            // Get category index from category array
-            val categoryArray = resources.getStringArray(R.array.category_array)
-            categorySpinner.setSelection(categoryArray.indexOf(currentTask.category)) // Set the existing category
+            categorySpinner.setText(currentTask.category, false)
             isEditing = true
         }
 
         saveTaskButton.setOnClickListener {
             val name = taskNameInput.text.toString().trim()
             val description = taskDescriptionInput.text.toString().trim()
-            val priority = prioritySpinner.selectedItem.toString()
+            val priority = prioritySpinner.text.toString()
             val completionTime = taskCompletionTimeInput.text.toString().trim()
-            val category = categorySpinner.selectedItem.toString() // Get the selected category
+            val category = categorySpinner.text.toString()
 
             if (name.isEmpty() || description.isEmpty() || completionTime.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
@@ -63,7 +71,7 @@ class AddTaskActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val task = Task(name, description, priority, completionTime, category) // Include category
+            val task = Task(name, description, priority, completionTime, category)
             val resultIntent = Intent().apply {
                 putExtra("task", task)
                 putExtra("isEditing", isEditing)

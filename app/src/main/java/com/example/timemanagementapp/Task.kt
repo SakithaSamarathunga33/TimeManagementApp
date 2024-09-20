@@ -1,5 +1,3 @@
-package com.example.timemanagementapp
-
 import android.os.Parcel
 import android.os.Parcelable
 

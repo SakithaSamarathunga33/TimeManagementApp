@@ -1,38 +1,40 @@
 <resources>
     <!-- Primary Colors -->
-    <color name="colorPrimary">#FFDE03</color>  <!-- Bright Yellow -->
-    <color name="colorPrimaryDark">#C6B200</color>  <!-- Darker Yellow -->
-    <color name="colorOnPrimary">#FFFFFF</color>  <!-- White for text on primary -->
+    <color name="colorPrimary">#FFDE03</color>
+    <color name="colorPrimaryVariant">#C6B200</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
 
     <!-- Secondary Colors -->
-    <color name="colorSecondary">#0336FF</color>  <!-- Bright Blue -->
-    <color name="colorSecondaryDark">#0029CC</color>
-    <color name="colorOnSecondary">#FFFFFF</color>  <!-- White for text on secondary -->
+    <color name="colorSecondary">#0336FF</color>
+    <color name="colorSecondaryVariant">#0029CC</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
 
-    <!-- Background Colors -->
-    <color name="windowBackground">#F0F4C3</color>  <!-- Light Lime Green, to complement the yellow -->
+    <!-- Background (Light Theme) -->
+    <color name="colorBackground">#F0F4C3</color> <!-- Light background color -->
+    <color name="colorSurface">#F0F4C3</color> <!-- Light surface color -->
+    <color name="colorOnSurface">#000000</color> <!-- Text on surface -->
 
-    <color name="test">#4F75FF</color>
+    <!-- Background (Dark Theme) -->
+    <color name="dark_colorBackground">#121212</color> <!-- Dark background color -->
+    <color name="dark_colorSurface">#1E1E1E</color> <!-- Dark surface color -->
+    <color name="dark_colorOnSurface">#FFFFFF</color> <!-- Text on dark surface -->
 
-    <!-- Button Colors -->
-    <color name="button_save_color">#FFAF00</color>
-    <color name="button_save_pressed_color">#D1B602</color><!-- Golden Yellow -->
-    <color name="button_back_color">#0026A8</color>  <!-- Deep Blue -->
+    <!-- Buttons -->
+    <color name="colorInteractivePositive">#FFAF00</color>
+    <color name="colorInteractiveNegative">#0026A8</color>
+    <color name="colorInteractiveNeutral">#BDBDBD</color>
+    <color name="colorInteractiveAccent">#FF4081</color>
+    <color name="colorOnTertiary">#000000</color>
 
-    <!-- Surface Colors -->
-    <color name="colorSurface">#F0F4C3</color>  <!-- Same as windowBackground for consistency -->
-    <color name="colorOnSurface">#000000</color>  <!-- Black for contrast -->
+    <!-- Text -->
+    <color name="colorOnBackground">#000000</color>
+    <color name="dark_colorOnBackground">#FFFFFF</color> <!-- Text on dark background -->
 
-    <!-- Error Colors -->
-    <color name="colorError">#D32F2F</color>  <!-- Red -->
-    <color name="colorOnError">#FFFFFF</color>  <!-- White for text on error -->
+    <!-- Error -->
+    <color name="colorError">#D32F2F</color>
+    <color name="colorOnError">#FFFFFF</color>
 
-    <!-- Custom Colors -->
-    <color name="white">#FFFFFF</color>  <!-- White -->
-    <color name="black">#000000</color>  <!-- Black -->
-
-
-
-
-
+    <!-- Neutral Colors -->
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBlack">#000000</color>
 </resources>

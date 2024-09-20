@@ -2,32 +2,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/colorBackground">
 
-    <!-- Toolbar for title and home button -->
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/test"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:background="@color/colorPrimary"
         android:layout_alignParentTop="true">
 
-        <!-- Home button in the right corner of the toolbar -->
         <ImageButton
             android:id="@+id/home_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="end"
-            android:background="?attr/selectableItemBackground"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/home_button_desc"
             android:padding="8dp"
             android:scaleType="fitCenter"
             android:src="@drawable/home" />
-    </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.MaterialToolbar>
 
-    <!-- Profile Picture -->
     <ImageView
         android:id="@+id/profile_picture"
         android:layout_width="100dp"
@@ -39,30 +35,31 @@
         android:src="@drawable/boy"
         android:contentDescription="Profile Picture" />
 
-    <!-- User Name -->
     <TextView
         android:id="@+id/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/profile_picture"
         android:layout_centerHorizontal="true"
-        android:text="Sakitha Samarathunga"
+        android:text="Sakitha Samarathunga\n"
+        android:textColor="@color/colorOnBackground"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp"
+        android:textAppearance="?attr/textAppearanceHeadline5"/>
 
-    <!-- User Details -->
     <TextView
         android:id="@+id/user_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/user_name"
         android:layout_centerHorizontal="true"
-        android:text="Age: 24\nEmail: sakithaudarashmika@gmail.com\nPhone: 0703516238"
+        android:text="Age: 24\n\nEmail: sakithaudarashmika@gmail.com\n\nPhone: 0703516238"
+        android:textColor="@color/colorOnBackground"
         android:textSize="16sp"
-        android:layout_marginTop="4dp"/>
+        android:layout_marginTop="4dp"
+        android:textAppearance="?attr/textAppearanceBody1"/>
 
-    <!-- Buttons for task categories -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -74,31 +71,46 @@
             android:id="@+id/view_work_tasks_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="View Work Tasks" />
+            android:layout_marginTop="120dp"
+            android:text="View Work Tasks"
+            android:backgroundTint="@color/colorInteractivePositive"
+            android:textColor="@color/colorOnPrimary"
+            android:textAppearance="?attr/textAppearanceButton"/>
 
         <Button
             android:id="@+id/view_personal_tasks_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="View Personal Tasks" />
+            android:text="View Personal Tasks"
+            android:backgroundTint="@color/colorInteractiveNegative"
+            android:textColor="@color/colorOnSecondary"
+            android:textAppearance="?attr/textAppearanceButton"/>
+
+        <!-- Completed Tasks Button -->
+        <Button
+            android:id="@+id/view_completed_tasks_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Completed Tasks"
+            android:backgroundTint="@color/colorInteractivePositive"
+            android:textColor="@color/colorOnPrimary"
+            android:textAppearance="?attr/textAppearanceButton"
+            android:layout_marginTop="1dp" />
     </LinearLayout>
 
-    <!-- RecyclerView for Personal Tasks -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/personal_tasks_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_below="@id/view_personal_tasks_button"
+        android:layout_below="@id/view_completed_tasks_button"
         android:layout_marginTop="16dp"
-        android:visibility="gone" /> <!-- Initially hidden -->
+        android:visibility="gone" />
 
-    <!-- RecyclerView for Work Tasks -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/work_tasks_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_below="@id/personal_tasks_recycler_view"
         android:layout_marginTop="16dp"
-        android:visibility="gone" /> <!-- Initially hidden -->
-
+        android:visibility="gone" />
 </RelativeLayout>

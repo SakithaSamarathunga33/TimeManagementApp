@@ -3,32 +3,34 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/colorBackground">
 
-    <!-- Title -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Personal Tasks"
-        android:textSize="24sp"
-        android:textColor="@color/black"
-        android:layout_marginBottom="16dp"
-        android:gravity="center" /> <!-- Center the title -->
+    android:layout_height="wrap_content"
+    android:text="Personal Tasks"
+    android:textSize="24sp"
+    android:textColor="@color/colorOnBackground"
+    android:layout_marginBottom="16dp"
+    android:gravity="center"
+    android:textAppearance="?attr/textAppearanceHeadline5"/>
 
-    <!-- RecyclerView to display personal tasks -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_personal_tasks"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scrollbars="vertical" /> <!-- Enable vertical scrollbar -->
+        android:scrollbars="vertical" />
 
-    <!-- Back Button -->
     <Button
         android:id="@+id/back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
-        android:text="Back" />
+        android:text="Back"
+        android:backgroundTint="@color/colorInteractiveNegative"
+        android:textColor="@color/colorOnSecondary"
+        android:textAppearance="?attr/textAppearanceButton"/>
 </LinearLayout>

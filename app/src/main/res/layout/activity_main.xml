@@ -1,92 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="@color/colorBackground">
 
-    <!-- Top Bar with Title and Profile Icon -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/test"
-        android:elevation="4dp"
-        android:padding="0dp">
+        android:layout_height="wrap_content">
 
-        <!-- Title on the left -->
-        <TextView
-            android:id="@+id/toolbar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Time Management"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:layout_alignParentStart="true" />
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Time Management"
+            app:titleTextColor="@color/colorBlack"
+            app:titleTextAppearance="?attr/textAppearanceHeadline6"
+            android:background="@color/colorPrimary">
 
-        <!-- Profile Icon on the right -->
-        <ImageView
-            android:id="@+id/profile_icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/man"
-            android:contentDescription="Profile"
-            android:padding="8dp"
-            android:layout_gravity="end" />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/profile_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="end"
+                android:src="@drawable/man"
+                android:contentDescription="Profile"
+                android:padding="8dp"
+                app:shapeAppearanceOverlay="@style/Circular" />
 
-    </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.MaterialToolbar>
 
-    <!-- RecyclerView to Display Task List -->
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_below="@id/toolbar"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appbar_layout"
         android:layout_above="@+id/buttons_container"
         android:layout_marginBottom="16dp"
-        android:scrollbars="vertical"
-        android:background="@color/colorSurface"
-        android:clipToPadding="false" />
+        android:clipToPadding="false"
+        android:padding="8dp"/>
 
-    <!-- Container for Buttons -->
+    <!-- Theme Switch -->
+    <Switch
+        android:id="@+id/theme_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dark Theme"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/buttons_container"
+        android:layout_marginBottom="8dp"/>
+
     <LinearLayout
         android:id="@+id/buttons_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:gravity="center"
-        android:background="@color/colorSurface"
         android:padding="8dp">
 
-        <!-- Button to Add New Task -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/add_task_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Add New Task"
-            android:backgroundTint="@color/button_save_color"
-            android:textColor="@color/black"
-            android:layout_marginBottom="8dp" />
+            android:layout_weight="1"
+            android:text="Add Task"
+            android:backgroundTint="@color/colorInteractivePositive"
+            android:textColor="@color/colorOnTertiary"
+            android:layout_marginEnd="8dp"
+            app:cornerRadius="8dp"
+            android:textAppearance="?attr/textAppearanceButton"/>
 
-        <!-- Button to Go to Timer -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/timer_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Go to Stopwatch"
-            android:backgroundTint="@color/button_save_color"
-            android:textColor="@color/black"
-            android:layout_marginBottom="8dp" />
+            android:layout_weight="1"
+            android:text="Stop\nwatch"
+            android:backgroundTint="@color/colorInteractiveNegative"
+            android:textColor="@color/colorOnSecondary"
+            android:layout_marginEnd="8dp"
+            app:cornerRadius="8dp"
+            android:textAppearance="?attr/textAppearanceButton"/>
 
-        <!-- New Button to Set Reminder -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/set_reminder_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Set Reminder"
-            android:backgroundTint="@color/button_save_color"
-            android:textColor="@color/black" />
+            android:layout_weight="1"
+            android:text="Reminder"
+            android:backgroundTint="@color/colorInteractivePositive"
+            android:textColor="@color/colorOnTertiary"
+            app:cornerRadius="8dp"
+            android:textAppearance="?attr/textAppearanceButton"/>
 
     </LinearLayout>
 

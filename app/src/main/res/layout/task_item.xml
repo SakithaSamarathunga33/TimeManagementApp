@@ -1,81 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:background="@drawable/task_item_background"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="8dp"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="8dp">
 
-    <!-- Task Name -->
+<LinearLayout
+android:orientation="vertical"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:padding="16dp">
+
+<TextView
+    android:id="@+id/task_name"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="18sp"
+    android:textStyle="bold"
+    android:textColor="@color/colorOnSurface"
+    android:text="Task Name"
+    android:textAppearance="?attr/textAppearanceSubtitle1"/>
+
+<TextView
+    android:id="@+id/task_description"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textColor="@color/colorOnSurface"
+    android:text="Task Description"
+    android:layout_marginTop="4dp"
+    android:textAppearance="?attr/textAppearanceBody2"/>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginTop="8dp">
+
     <TextView
-        android:id="@+id/task_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:text="Task Name" />
+        android:text="Priority:"
+        android:textColor="@color/colorOnSurface"
+        android:textAppearance="?attr/textAppearanceCaption"/>
 
-    <!-- Task Description -->
-    <TextView
-        android:id="@+id/task_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="Task Description"
-        android:layout_marginTop="4dp" />
-
-    <!-- Task Priority -->
     <TextView
         android:id="@+id/task_priority"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="@color/colorOnSurface"
+        android:text="Priority"
+        android:gravity="end"
+        android:textAppearance="?attr/textAppearanceCaption"/>
+</LinearLayout>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="Priority"
-        android:layout_marginTop="4dp" />
+        android:text="Category:"
+        android:textColor="@color/colorOnSurface"
+        android:textAppearance="?attr/textAppearanceCaption"/>
 
-    <!-- Task Category -->
     <TextView
         android:id="@+id/task_category"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
+        android:layout_weight="1"
+        android:textColor="@color/colorOnSurface"
         android:text="Category"
-        android:layout_marginTop="4dp" />
+        android:gravity="end"
+        android:textAppearance="?attr/textAppearanceCaption"/>
+</LinearLayout>
 
-    <!-- Buttons for task actions -->
-    <LinearLayout
-        android:orientation="horizontal"
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:gravity="center">
+
+    <Button
+        android:id="@+id/edit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
+        android:text="Edit"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@color/colorOnSecondary"
+        android:layout_marginEnd="8dp"
+        android:textAppearance="?attr/textAppearanceButton"/>
 
-        <Button
-            android:id="@+id/edit_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Edit"
-            android:textColor="@color/black"
-            android:background="@drawable/button_background" />
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:backgroundTint="@color/colorError"
+        android:textColor="@color/colorOnError"
+        android:layout_marginEnd="8dp"
+        android:textAppearance="?attr/textAppearanceButton"/>
 
-        <Button
-            android:id="@+id/delete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Delete"
-            android:textColor="@color/black"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/button_background" />
-
-        <Button
-            android:id="@+id/view_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="View"
-            android:textColor="@color/black"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/button_background" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/view_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@color/colorOnPrimary"
+        android:textAppearance="?attr/textAppearanceButton"/>
+</LinearLayout>
 
 </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
