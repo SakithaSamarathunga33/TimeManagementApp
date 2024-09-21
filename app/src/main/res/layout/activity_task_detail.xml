@@ -127,7 +127,7 @@
             android:layout_height="wrap_content"
             android:text="Start"
             android:backgroundTint="@color/colorInteractivePositive"
-            android:textColor="@color/colorOnPrimary"
+            android:textColor="@color/colorOnTertiary"
             android:layout_marginEnd="8dp"
             android:textAppearance="?attr/textAppearanceButton"/>
 
@@ -146,10 +146,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reset"
-            android:backgroundTint="@color/colorSecondary"
-            android:textColor="@color/colorOnSecondary"
+            android:backgroundTint="@color/colorInteractivePositive"
+            android:textColor="@color/colorOnTertiary"
             android:textAppearance="?attr/textAppearanceButton"/>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/set_alarm_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set Alarm"
+        android:backgroundTint="@color/colorInteractivePositive"
+        android:textColor="@color/colorOnTertiary"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        android:textAppearance="?attr/textAppearanceButton"/>
 
     <Button
         android:id="@+id/back_button"

@@ -5,11 +5,13 @@ import android.Manifest
 import android.app.*
 import android.content.*
 import android.content.pm.PackageManager
+import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -102,6 +104,11 @@ class TaskDetailActivity : AppCompatActivity() {
             moveToCompletedTasks(task)
             finish() // Optionally finish this activity after saving
         }
+
+        // Set Alarm button listener
+        findViewById<Button>(R.id.set_alarm_button).setOnClickListener {
+            showTimePickerDialog()
+        }
     }
 
     private fun moveToCompletedTasks(task: Task) {
@@ -165,13 +172,13 @@ class TaskDetailActivity : AppCompatActivity() {
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 calendar.set(Calendar.MINUTE, minute)
                 calendar.set(Calendar.SECOND, 0)
-                setReminder(calendar.timeInMillis)
+                setAlarm(calendar.timeInMillis)
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
         )
         timePicker.show()
     }
 
-    private fun setReminder(timeInMillis: Long) {
+    private fun setAlarm(timeInMillis: Long) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (!alarmManager.canScheduleExactAlarms()) {
                 Toast.makeText(
@@ -202,45 +209,62 @@ class TaskDetailActivity : AppCompatActivity() {
 
         try {
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
-            Toast.makeText(this, "Reminder set!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Alarm set!", Toast.LENGTH_SHORT).show() // Show toast when alarm is set
         } catch (e: SecurityException) {
             Toast.makeText(
                 this,
-                "Failed to set reminder. Check your permissions.",
+                "Failed to set alarm. Check your permissions.",
                 Toast.LENGTH_SHORT
             ).show()
         }
     }
 
     class AlarmReceiver : BroadcastReceiver() {
+        private lateinit var ringtone: Ringtone
+
         override fun onReceive(context: Context, intent: Intent) {
-            showNotification(context)
+            playAlarmSound(context)
+            showAlarmNotification(context)
+
+            // Stop the alarm after a specified duration (e.g., 5 seconds)
+            Handler(Looper.getMainLooper()).postDelayed({
+                stopAlarm()
+            }, 5000) // Adjust this duration as needed
         }
 
-        private fun showNotification(context: Context) {
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        private fun playAlarmSound(context: Context) {
+            val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            ringtone = RingtoneManager.getRingtone(context, alarmUri)
+            ringtone.play()
+        }
+
+        private fun stopAlarm() {
+            if (this::ringtone.isInitialized && ringtone.isPlaying) {
+                ringtone.stop()
+            }
+        }
+
+        private fun showAlarmNotification(context: Context) {
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val channel = NotificationChannel(
-                    "reminder_channel",
-                    "Reminder Notifications",
+                    "alarm_channel",
+                    "Alarm Notifications",
                     NotificationManager.IMPORTANCE_HIGH
                 ).apply {
                     enableVibration(true)
                     vibrationPattern = longArrayOf(100, 200, 100, 200)
-                    setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), null)
+                    setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM), null)
                 }
                 notificationManager.createNotificationChannel(channel)
             }
 
-            val notificationBuilder = NotificationCompat.Builder(context, "reminder_channel")
+            val notificationBuilder = NotificationCompat.Builder(context, "alarm_channel")
                 .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-                .setContentTitle("Task Reminder")
-                .setContentText("It's time to complete your task!")
+                .setContentTitle("Alarm Ringing")
+                .setContentText("Your alarm is ringing!")
                 .setAutoCancel(true)
-                .setVibrate(longArrayOf(100, 200, 100, 200))
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
 
             notificationManager.notify(1, notificationBuilder.build())
