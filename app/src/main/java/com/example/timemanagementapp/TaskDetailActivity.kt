@@ -8,9 +8,7 @@ import android.content.pm.PackageManager
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -21,16 +19,16 @@ import java.util.*
 
 class TaskDetailActivity : AppCompatActivity() {
 
-    private lateinit var chronometer: Chronometer
-    private var pauseOffset: Long = 0
+    private lateinit var countDownTimer: CountDownTimer
     private var running: Boolean = false
-    private lateinit var handler: Handler
     private var completionTimeInMillis: Long = 0
     private lateinit var alarmManager: AlarmManager
     private lateinit var pendingIntent: PendingIntent
     private lateinit var progressBar: ProgressBar
     private lateinit var saveButton: Button
     private lateinit var completedCheckbox: CheckBox
+    private var timeRemainingInMillis: Long = 0 // Holds the remaining time after pause or resume
+    private lateinit var timerTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,10 +47,10 @@ class TaskDetailActivity : AppCompatActivity() {
         val taskDescriptionTextView = findViewById<TextView>(R.id.task_description_detail)
         val taskPriorityTextView = findViewById<TextView>(R.id.task_priority_detail)
         val taskCategoryTextView = findViewById<TextView>(R.id.task_category_detail)
-        chronometer = findViewById(R.id.stopwatch)
         progressBar = findViewById(R.id.progress_bar)
         saveButton = findViewById(R.id.save_button)
         completedCheckbox = findViewById(R.id.task_completed_checkbox)
+        timerTextView = findViewById(R.id.timer_text_view) // TextView for displaying time left
 
         taskNameTextView.text = task.name
         taskDescriptionTextView.text = task.description
@@ -61,43 +59,38 @@ class TaskDetailActivity : AppCompatActivity() {
 
         // Parse the completion time into milliseconds
         completionTimeInMillis = parseCompletionTime(task.completionTime)
+        timeRemainingInMillis = completionTimeInMillis // Initially, the remaining time is the same as completion time
 
-        handler = Handler(Looper.getMainLooper())
         alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        // Start button for the stopwatch
+        // Set the max progress of the progress bar based on completion time
+        progressBar.max = 100 // Progress in percentage (0 to 100)
+
+        // Start button for the countdown timer
         findViewById<Button>(R.id.start_button).setOnClickListener {
             if (!running) {
-                chronometer.base = SystemClock.elapsedRealtime() - pauseOffset
-                chronometer.start()
+                startCountdown(timeRemainingInMillis)
                 running = true
-                monitorStopwatch()
             }
         }
 
-        // Stop button for the stopwatch
+        // Stop button for the countdown timer
         findViewById<Button>(R.id.stop_button).setOnClickListener {
             if (running) {
-                chronometer.stop()
-                pauseOffset = SystemClock.elapsedRealtime() - chronometer.base
+                stopCountdown()
                 running = false
             }
         }
 
-        // Reset button for the stopwatch
+        // Reset button for the countdown timer
         findViewById<Button>(R.id.reset_button).setOnClickListener {
-            chronometer.base = SystemClock.elapsedRealtime()
-            pauseOffset = 0
-            progressBar.progress = 0  // Reset progress bar on reset
+            resetCountdown()
         }
 
         // Back button to finish the activity
         findViewById<Button>(R.id.back_button).setOnClickListener {
             finish()
         }
-
-        // Set the max progress of the progress bar based on completion time
-        progressBar.max = completionTimeInMillis.toInt()
 
         // Checkbox listener to show the save button
         completedCheckbox.setOnCheckedChangeListener { _, isChecked ->
@@ -106,19 +99,14 @@ class TaskDetailActivity : AppCompatActivity() {
 
         // Save button listener to move the task to completed
         saveButton.setOnClickListener {
-            // Logic to save the task to completed tasks
             moveToCompletedTasks(task)
             finish() // Optionally finish this activity after saving
         }
     }
 
     private fun moveToCompletedTasks(task: Task) {
-        // Implement your logic to remove the task from the current list
-        // and add it to the completed tasks list
-        // Example:
-        // TaskRepository.removeTask(task)
-        // TaskRepository.addCompletedTask(task)
         Toast.makeText(this, "${task.name} has been marked as completed!", Toast.LENGTH_SHORT).show()
+        // Add your logic to move the task to the completed tasks
     }
 
     private fun parseCompletionTime(time: String): Long {
@@ -131,40 +119,43 @@ class TaskDetailActivity : AppCompatActivity() {
         return 0L
     }
 
-    private fun monitorStopwatch() {
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                if (running) {
-                    val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
-                    Log.d(
-                        "TaskDetailActivity",
-                        "Elapsed: $elapsedMillis, Completion: $completionTimeInMillis"
-                    )
-
-                    // Calculate progress percentage
-                    val progress = if (completionTimeInMillis > 0) {
-                        (elapsedMillis * 100 / completionTimeInMillis).toInt().coerceIn(0, 100)
-                    } else {
-                        0
-                    }
-
-                    progressBar.progress = progress  // Update progress bar
-
-                    if (elapsedMillis >= completionTimeInMillis) {
-                        chronometer.stop()
-                        running = false
-                        progressBar.progress = progressBar.max  // Set progress to max on completion
-                        Toast.makeText(
-                            this@TaskDetailActivity,
-                            "Task time completed!",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    } else {
-                        handler.postDelayed(this, 1000)
-                    }
-                }
+    private fun startCountdown(timeInMillis: Long) {
+        countDownTimer = object : CountDownTimer(timeInMillis, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                timeRemainingInMillis = millisUntilFinished
+                updateProgressAndTime(millisUntilFinished)
             }
-        }, 1000)
+
+            override fun onFinish() {
+                running = false
+                progressBar.progress = 100 // Ensure progress bar is fully filled
+                timerTextView.text = "00:00"
+                Toast.makeText(this@TaskDetailActivity, "Task time completed!", Toast.LENGTH_LONG).show()
+            }
+        }.start()
+    }
+
+    private fun stopCountdown() {
+        countDownTimer.cancel()
+    }
+
+    private fun resetCountdown() {
+        stopCountdown()
+        timeRemainingInMillis = completionTimeInMillis
+        updateProgressAndTime(timeRemainingInMillis)
+        running = false
+        progressBar.progress = 0  // Reset progress bar on reset
+    }
+
+    private fun updateProgressAndTime(millisUntilFinished: Long) {
+        // Calculate progress as the proportion of elapsed time
+        val progress = (((completionTimeInMillis - millisUntilFinished).toFloat() / completionTimeInMillis) * 100).toInt()
+        progressBar.progress = progress
+
+        // Update timer text view with remaining time in mm:ss format
+        val minutes = (millisUntilFinished / 1000) / 60
+        val seconds = (millisUntilFinished / 1000) % 60
+        timerTextView.text = String.format("%02d:%02d", minutes, seconds)
     }
 
     private fun showTimePickerDialog() {
@@ -182,7 +173,6 @@ class TaskDetailActivity : AppCompatActivity() {
 
     private fun setReminder(timeInMillis: Long) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // Check if the app can schedule exact alarms
             if (!alarmManager.canScheduleExactAlarms()) {
                 Toast.makeText(
                     this,
@@ -193,7 +183,6 @@ class TaskDetailActivity : AppCompatActivity() {
             }
         }
 
-        // Check if notification permission is granted (required for Android 13 and above)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED
@@ -211,7 +200,6 @@ class TaskDetailActivity : AppCompatActivity() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Schedule the alarm
         try {
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
             Toast.makeText(this, "Reminder set!", Toast.LENGTH_SHORT).show()
@@ -224,9 +212,7 @@ class TaskDetailActivity : AppCompatActivity() {
         }
     }
 
-    // Create the AlarmReceiver class to handle notifications
     class AlarmReceiver : BroadcastReceiver() {
-
         override fun onReceive(context: Context, intent: Intent) {
             showNotification(context)
         }
@@ -235,7 +221,6 @@ class TaskDetailActivity : AppCompatActivity() {
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-            // Create notification channel for Android 8.0 and above
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val channel = NotificationChannel(
                     "reminder_channel",

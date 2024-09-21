@@ -6,10 +6,6 @@
     android:padding="16dp"
     android:background="@color/colorBackground">
 
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
 
         <TextView
             android:layout_width="match_parent"
@@ -18,9 +14,9 @@
             android:textSize="24sp"
             android:textColor="@color/colorOnSurface"
             android:gravity="center"
-            android:padding="16dp"
+            android:padding="1dp"
             android:textAppearance="?attr/textAppearanceHeadline4"/>
-    </com.google.android.material.card.MaterialCardView>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_work_tasks"
